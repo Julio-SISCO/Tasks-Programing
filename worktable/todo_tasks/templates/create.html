@@ -1,0 +1,24 @@
+{% extends 'root.html' %}
+{% block title %}
+{% endblock title %}
+{% block main-content %}
+<div class="row d-flex justify-content-center align-items-center h-100">
+    <div style="width: 400px;">
+        <hr>
+        <form action="" method="post" novalidate class="shadow p-5 mask-custom text-white">
+            {% csrf_token %}
+            {% for fm in form %}
+                {{fm.label_tag}}
+                <br> {{fm}}
+                <small class="text-danger">
+                    {{fm.errors|striptags}}
+                </small>
+                <br><br>
+            {% endfor %}
+            
+
+        </form>
+    </div>
+
+</div>
+{% endblock main-content %}

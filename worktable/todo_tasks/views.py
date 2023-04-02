@@ -9,7 +9,8 @@ from django.views import View
 class RegistrationView(View):
     def get(self, request):
         form = forms.RegistrationForm
-        return render(request, '', locals())
+        v = True
+        return render(request, 'connexion.html', locals())
 
     def post(self, request):
         form = forms.RegistrationForm(request.POST)
@@ -19,7 +20,7 @@ class RegistrationView(View):
                 request,
                 "Congratulations! User Registered Successfully"
             )
-            return redirect('')
+            return redirect('login')
 
 
 def DelteteTask(request, pk):
@@ -34,15 +35,50 @@ def DelteteTask(request, pk):
 class CreateTask(View):
     def get(self, request):
         form = forms.TaskForm
-        form.owner = request.user
-        return render(request, '', locals())
+        return render(request, 'create.html', locals())
 
     def post(self, request):
         form = forms.TaskForm(request.POST)
         if form.is_valid():
-            form.save()
+            Task.objects.create(request.user, form.label, form.descritpion, form.begin, form.end, form.priority, form.done)
             messages.success(
                 request, "Congratulations! Task Created Successfully")
         else:
             messages.warning(request, "Invalid Input Data")
-        return redirect('')
+        return redirect('tasks')
+    
+
+class UpdateTask(View):
+    def get(self, request, pk):
+        form = forms.TaskForm
+        key = Task.objects.get(pk=pk)
+        return render(request, 'update.html', locals())
+    
+    def post(self, request, pk):
+        form = forms.TaskForm(request.POST)
+        task = Task.objects.get(pk=pk)
+        if form.is_valid():
+            task.label = form.cleaned_data['label']
+            task.description = form.cleaned_data['description']
+            task.begin = form.cleaned_data['begin']
+            task.end = form.cleaned_data['end']
+            task.priority = form.cleaned_data['pritority']
+            task.done = form.cleaned_data['done']
+
+            task.save()
+
+            messages.success(request, "Congratulations! Task Updated Successfully")
+            return redirect('update')
+        else:
+            messages.warning(request, "Invalid Input Data")
+            return redirect('tasks')
+    
+
+def TaskView(request, *args, **kwargs):
+    if request.user.is_authenticated:
+        task = Task.objects.filter(owner = request.user)
+        if task == []:
+            empty = "You have no tasks."
+        return render(request, 'tasks.html', locals())
+    else:
+        return redirect('login')

@@ -1,0 +1,47 @@
+{% extends 'root.html' %}
+{% block title %}
+{% if v %}
+    Registration
+{% else %}
+    Connexion
+{% endif %}
+{% endblock title %}
+{% block main-content %}
+<div class="row d-flex justify-content-center align-items-center h-100">
+    <div style="width: 400px;">
+        <h3 style="text-align: center !important">
+            {% if v %}
+                Registration
+            {% else %}
+                Connexion
+            {% endif %}
+        </h3>
+        <hr>
+        <form action="" method="post" novalidate class="shadow p-5 mask-custom text-white">
+            {% csrf_token %}
+            {% for fm in form %}
+                {{fm.label_tag}}
+                <br> {{fm}}
+                <small class="text-danger">
+                    {{fm.errors|striptags}}
+                </small>
+                <br><br>
+            {% endfor %}
+            {% if v %}
+                <input type="submit" value="Submit" class="btn btn-primary"> <br>
+                <div class="text-center text-white fw-bold">
+                    <small>Existing User ? <a href="{% url 'login' %}" class="text-white">Login Now </a></small>
+                </div>
+            {% else %}
+                <input type="submit" value="Submit" class="btn btn-primary"> <br>
+                        <div class="text-center text-white fw-bold">
+                            <small>New User ? <a href="{% url 'register' %}" class="text-white">Registrate Now </a></small>
+                        </div>
+            {% endif %}
+            
+
+        </form>
+    </div>
+
+</div>
+{% endblock main-content %}
